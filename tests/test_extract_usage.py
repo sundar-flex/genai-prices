@@ -119,6 +119,37 @@ def test_arcee_chat_usage(api_flavor: str) -> None:
     )
 
 
+@pytest.mark.parametrize('api_flavor', ['default', 'chat'])
+def test_flexai_chat_usage(api_flavor: str) -> None:
+    response_data = {
+        'model': 'DeepSeek-V4-Flash-0731',
+        'usage': {
+            'prompt_tokens': 100,
+            'prompt_tokens_details': {'cached_tokens': 30},
+            'completion_tokens': 40,
+            'completion_tokens_details': {'reasoning_tokens': 10},
+        },
+    }
+
+    extracted = extract_usage(response_data, provider_id='flexai', api_flavor=api_flavor)
+
+    assert extracted.model is not None
+    assert extracted.model.id == 'DeepSeek-V4-Flash-0731'
+    assert extracted.usage == Usage(
+        input_tokens=100, cache_read_tokens=30, output_tokens=40, output_reasoning_tokens=10
+    )
+
+
+def test_flexai_embeddings_usage() -> None:
+    response_data = {'model': 'bge-m3', 'usage': {'prompt_tokens': 12, 'total_tokens': 12}}
+
+    extracted = extract_usage(response_data, provider_id='flexai', api_flavor='embeddings')
+
+    assert extracted.model is not None
+    assert extracted.model.id == 'bge-m3'
+    assert extracted.usage == Usage(input_tokens=12)
+
+
 def test_baseten_chat_usage() -> None:
     response_data = {
         'model': 'zai-org/GLM-5.3-Flash',

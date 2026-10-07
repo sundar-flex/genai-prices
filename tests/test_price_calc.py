@@ -251,6 +251,56 @@ def test_databricks_api_url_rejects_other_hosts_and_paths(provider_api_url: str)
         calc_price(Usage(input_tokens=1), model_ref='databricks-gpt-oss-120b', provider_api_url=provider_api_url)
 
 
+@pytest.mark.parametrize(
+    ('model_ref', 'expected_total_price'),
+    [
+        ('DeepSeek-V4-Flash-0731', Decimal('0.249')),
+        ('GLM-5.2', Decimal('2.4469')),
+        ('gpt-oss-120b', Decimal('0.2045')),
+        # No cache-read rate, so cached input is billed at the input rate.
+        ('PaddleOCR-VL', Decimal('1.08')),
+    ],
+)
+def test_flexai_model_prices(model_ref: str, expected_total_price: Decimal) -> None:
+    price = calc_price(
+        Usage(input_tokens=2_000_000, cache_read_tokens=1_000_000, output_tokens=1_000_000),
+        model_ref=model_ref,
+        provider_id='flexai',
+    )
+
+    assert price.total_price == expected_total_price
+
+
+def test_flexai_embedding_price() -> None:
+    price = calc_price(Usage(input_tokens=2_000_000), model_ref='bge-m3', provider_id='flexai')
+
+    assert price.total_price == Decimal('0.02')
+
+
+@pytest.mark.parametrize(
+    'provider_api_url',
+    [
+        'https://api.flex.ai/v1/chat/completions',
+        'https://tokens.flex.ai/v1/chat/completions',
+        'https://api.flex.ai',
+    ],
+)
+def test_flexai_api_url(provider_api_url: str) -> None:
+    price = calc_price(Usage(input_tokens=1_000_000), model_ref='gpt-oss-120b', provider_api_url=provider_api_url)
+
+    assert price.provider.id == 'flexai'
+    assert price.total_price == Decimal('0.03')
+
+
+@pytest.mark.parametrize(
+    'provider_api_url',
+    ['https://api.flex.ai.evil.test/v1/chat/completions', 'https://flex.ai/v1/chat/completions'],
+)
+def test_flexai_api_url_rejects_other_hosts(provider_api_url: str) -> None:
+    with pytest.raises(LookupError, match='Unable to find provider provider_api_url='):
+        calc_price(Usage(input_tokens=1), model_ref='GLM-5.2', provider_api_url=provider_api_url)
+
+
 def test_databricks_provider_inference() -> None:
     snapshot_data = get_snapshot()
 

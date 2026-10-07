@@ -4651,6 +4651,288 @@ providers: list[Provider] = [
         ],
     ),
     Provider(
+        id='flexai',
+        name='FlexAI',
+        api_pattern='https://(?:tokens|api)\\.flex\\.ai(?:/|$)',
+        pricing_urls=['https://flex.ai/pricing', 'https://api.flex.ai/v1/models'],
+        description="OpenAI-compatible inference for open-weight models served on FlexAI's own GPU clusters.",
+        price_comments='Covers every token-priced model in the FlexAI catalog: the text-generation models plus the BGE-M3 embedding model. Prices come from the `pricing` block of `GET https://api.flex.ai/v1/models` (authenticated) and match the public pricing page. Image, speech-to-text and text-to-speech models are omitted because they are billed per image or per minute, not per token. Model IDs are bare FlexAI serving names, so they do not infer the FlexAI provider without a FlexAI provider ID or API URL. `tokens.flex.ai` is a legacy host that still serves the same API.',
+        extractors=[
+            UsageExtractor(
+                root='usage',
+                mappings=[
+                    UsageExtractorMapping(path='prompt_tokens', dest='input_tokens', required=True),
+                    UsageExtractorMapping(
+                        path=['prompt_tokens_details', 'cached_tokens'], dest='cache_read_tokens', required=False
+                    ),
+                    UsageExtractorMapping(
+                        path=['completion_tokens_details', 'reasoning_tokens'],
+                        dest='output_reasoning_tokens',
+                        required=False,
+                    ),
+                    UsageExtractorMapping(path='completion_tokens', dest='output_tokens', required=True),
+                ],
+                api_flavor='default',
+                model_path='model',
+            ),
+            UsageExtractor(
+                root='usage',
+                mappings=[
+                    UsageExtractorMapping(path='prompt_tokens', dest='input_tokens', required=True),
+                    UsageExtractorMapping(
+                        path=['prompt_tokens_details', 'cached_tokens'], dest='cache_read_tokens', required=False
+                    ),
+                    UsageExtractorMapping(
+                        path=['completion_tokens_details', 'reasoning_tokens'],
+                        dest='output_reasoning_tokens',
+                        required=False,
+                    ),
+                    UsageExtractorMapping(path='completion_tokens', dest='output_tokens', required=True),
+                ],
+                api_flavor='chat',
+                model_path='model',
+            ),
+            UsageExtractor(
+                root='usage',
+                mappings=[UsageExtractorMapping(path='prompt_tokens', dest='input_tokens', required=True)],
+                api_flavor='embeddings',
+                model_path='model',
+            ),
+        ],
+        models=[
+            ModelInfo(
+                id='DeepSeek-V4-Flash-0731',
+                match=ClauseEquals(equals='DeepSeek-V4-Flash-0731'),
+                name='DeepSeek V4 Flash 0731',
+                context_window=1048576,
+                prices=ModelPrice(
+                    input_mtok=Decimal('0.06'), cache_read_mtok=Decimal('0.009'), output_mtok=Decimal('0.18')
+                ),
+            ),
+            ModelInfo(
+                id='DeepSeek-V4.1-Flash',
+                match=ClauseEquals(equals='DeepSeek-V4.1-Flash'),
+                name='DeepSeek V4.1 Flash',
+                context_window=1048576,
+                prices=ModelPrice(
+                    input_mtok=Decimal('0.14'), cache_read_mtok=Decimal('0.021'), output_mtok=Decimal('0.42')
+                ),
+            ),
+            ModelInfo(
+                id='GLM-4.5-Air-FP8',
+                match=ClauseEquals(equals='GLM-4.5-Air-FP8'),
+                name='GLM 4.5 Air FP8',
+                context_window=131072,
+                prices=ModelPrice(
+                    input_mtok=Decimal('0.14'), cache_read_mtok=Decimal('0.021'), output_mtok=Decimal('0.86')
+                ),
+            ),
+            ModelInfo(
+                id='GLM-5.2',
+                match=ClauseEquals(equals='GLM-5.2'),
+                name='GLM 5.2',
+                context_window=131072,
+                prices=ModelPrice(
+                    input_mtok=Decimal('0.5625'), cache_read_mtok=Decimal('0.0844'), output_mtok=Decimal('1.8')
+                ),
+            ),
+            ModelInfo(
+                id='GLM-5.3-Flash',
+                match=ClauseEquals(equals='GLM-5.3-Flash'),
+                name='GLM 5.3 Flash',
+                context_window=1048576,
+                prices=ModelPrice(
+                    input_mtok=Decimal('0.09'), cache_read_mtok=Decimal('0.0135'), output_mtok=Decimal('0.28')
+                ),
+            ),
+            ModelInfo(
+                id='Llama-3.3-70B-Instruct-FP8',
+                match=ClauseEquals(equals='Llama-3.3-70B-Instruct-FP8'),
+                name='Llama 3.3 70B Instruct',
+                context_window=131072,
+                prices=ModelPrice(
+                    input_mtok=Decimal('0.135'), cache_read_mtok=Decimal('0.0203'), output_mtok=Decimal('0.4')
+                ),
+            ),
+            ModelInfo(
+                id='Meta-Llama-3.1-8B-Instruct-FP8',
+                match=ClauseEquals(equals='Meta-Llama-3.1-8B-Instruct-FP8'),
+                name='Llama 3.1 8B Instruct',
+                context_window=131072,
+                prices=ModelPrice(
+                    input_mtok=Decimal('0.02'), cache_read_mtok=Decimal('0.003'), output_mtok=Decimal('0.05')
+                ),
+            ),
+            ModelInfo(
+                id='MiniMax-M2.7',
+                match=ClauseEquals(equals='MiniMax-M2.7'),
+                name='MiniMax M2.7',
+                context_window=204800,
+                prices=ModelPrice(
+                    input_mtok=Decimal('0.24'), cache_read_mtok=Decimal('0.036'), output_mtok=Decimal('0.96')
+                ),
+            ),
+            ModelInfo(
+                id='Mistral-Nemo-Instruct-2407-FP8',
+                match=ClauseEquals(equals='Mistral-Nemo-Instruct-2407-FP8'),
+                name='Mistral Nemo 12B',
+                context_window=131072,
+                prices=ModelPrice(
+                    input_mtok=Decimal('0.019'), cache_read_mtok=Decimal('0.0028'), output_mtok=Decimal('0.03')
+                ),
+            ),
+            ModelInfo(
+                id='Muse-Glimmer-30B',
+                match=ClauseEquals(equals='Muse-Glimmer-30B'),
+                name='Muse Glimmer 30B',
+                context_window=131072,
+                prices=ModelPrice(
+                    input_mtok=Decimal('0.3'), cache_read_mtok=Decimal('0.045'), output_mtok=Decimal('1.2')
+                ),
+            ),
+            ModelInfo(
+                id='NVIDIA-Nemotron-3.5-Lightning-30B-A3B',
+                match=ClauseEquals(equals='NVIDIA-Nemotron-3.5-Lightning-30B-A3B'),
+                name='Nemotron 3.5 Lightning 30B A3B',
+                context_window=1048576,
+                prices=ModelPrice(
+                    input_mtok=Decimal('0.08'), cache_read_mtok=Decimal('0.012'), output_mtok=Decimal('0.2')
+                ),
+            ),
+            ModelInfo(
+                id='PaddleOCR-VL',
+                match=ClauseEquals(equals='PaddleOCR-VL'),
+                name='PaddleOCR-VL 0.9B',
+                context_window=131072,
+                prices=ModelPrice(input_mtok=Decimal('0.14'), output_mtok=Decimal('0.8')),
+            ),
+            ModelInfo(
+                id='Qwen3-30B-A3B-Thinking-2507-FP8',
+                match=ClauseEquals(equals='Qwen3-30B-A3B-Thinking-2507-FP8'),
+                name='Qwen 3 30B Thinking',
+                context_window=262144,
+                prices=ModelPrice(
+                    input_mtok=Decimal('0.2'), cache_read_mtok=Decimal('0.03'), output_mtok=Decimal('2.4')
+                ),
+            ),
+            ModelInfo(
+                id='Qwen3-8B-FP8',
+                match=ClauseEquals(equals='Qwen3-8B-FP8'),
+                name='Qwen 3 8B',
+                context_window=40960,
+                prices=ModelPrice(
+                    input_mtok=Decimal('0.117'), cache_read_mtok=Decimal('0.0175'), output_mtok=Decimal('0.455')
+                ),
+            ),
+            ModelInfo(
+                id='Qwen3-Coder-30B-A3B-Instruct-FP8',
+                match=ClauseEquals(equals='Qwen3-Coder-30B-A3B-Instruct-FP8'),
+                name='Qwen3 Coder 30B A3B',
+                context_window=262144,
+                prices=ModelPrice(
+                    input_mtok=Decimal('0.07'), cache_read_mtok=Decimal('0.0105'), output_mtok=Decimal('0.26')
+                ),
+            ),
+            ModelInfo(
+                id='Qwen3.5-9B',
+                match=ClauseEquals(equals='Qwen3.5-9B'),
+                name='Qwen3.5 9B',
+                context_window=262144,
+                prices=ModelPrice(
+                    input_mtok=Decimal('0.1'), cache_read_mtok=Decimal('0.015'), output_mtok=Decimal('0.15')
+                ),
+            ),
+            ModelInfo(
+                id='Qwen3.6-27B-FP8',
+                match=ClauseEquals(equals='Qwen3.6-27B-FP8'),
+                name='Qwen3.6-27B',
+                context_window=262144,
+                prices=ModelPrice(
+                    input_mtok=Decimal('0.39'), cache_read_mtok=Decimal('0.0585'), output_mtok=Decimal('2.34')
+                ),
+            ),
+            ModelInfo(
+                id='Qwen3.6-35B-A3B-FP8',
+                match=ClauseEquals(equals='Qwen3.6-35B-A3B-FP8'),
+                name='Qwen3.6-35B-A3B',
+                context_window=262144,
+                prices=ModelPrice(
+                    input_mtok=Decimal('0.1'), cache_read_mtok=Decimal('0.015'), output_mtok=Decimal('0.9')
+                ),
+            ),
+            ModelInfo(
+                id='Qwen3.8-27B',
+                match=ClauseEquals(equals='Qwen3.8-27B'),
+                name='Qwen3.8 27B',
+                context_window=262144,
+                prices=ModelPrice(
+                    input_mtok=Decimal('0.15'), cache_read_mtok=Decimal('0.0225'), output_mtok=Decimal('1.875')
+                ),
+            ),
+            ModelInfo(
+                id='Qwen3.8-Flash-Next',
+                match=ClauseEquals(equals='Qwen3.8-Flash-Next'),
+                name='Qwen3.8 Flash Next',
+                context_window=262144,
+                prices=ModelPrice(
+                    input_mtok=Decimal('0.15'), cache_read_mtok=Decimal('0.0225'), output_mtok=Decimal('0.47')
+                ),
+            ),
+            ModelInfo(
+                id='Step-3.7-Flash',
+                match=ClauseEquals(equals='Step-3.7-Flash'),
+                name='Step 3.7 Flash',
+                context_window=262144,
+                prices=ModelPrice(
+                    input_mtok=Decimal('0.2'), cache_read_mtok=Decimal('0.03'), output_mtok=Decimal('1.15')
+                ),
+            ),
+            ModelInfo(
+                id='bge-m3',
+                match=ClauseEquals(equals='bge-m3'),
+                name='BGE-M3',
+                context_window=8192,
+                prices=ModelPrice(input_mtok=Decimal('0.01')),
+            ),
+            ModelInfo(
+                id='gemma-4-26B-A4B-it',
+                match=ClauseEquals(equals='gemma-4-26B-A4B-it'),
+                name='Gemma 4 26B A4B',
+                context_window=262144,
+                prices=ModelPrice(
+                    input_mtok=Decimal('0.06'), cache_read_mtok=Decimal('0.009'), output_mtok=Decimal('0.33')
+                ),
+            ),
+            ModelInfo(
+                id='gemma-4-31b-it',
+                match=ClauseEquals(equals='gemma-4-31b-it'),
+                name='Gemma 4 31B IT',
+                context_window=262144,
+                prices=ModelPrice(
+                    input_mtok=Decimal('0.1'), cache_read_mtok=Decimal('0.015'), output_mtok=Decimal('0.34')
+                ),
+            ),
+            ModelInfo(
+                id='gpt-oss-120b',
+                match=ClauseEquals(equals='gpt-oss-120b'),
+                name='GPT-OSS 120B',
+                context_window=131072,
+                prices=ModelPrice(
+                    input_mtok=Decimal('0.03'), cache_read_mtok=Decimal('0.0045'), output_mtok=Decimal('0.17')
+                ),
+            ),
+            ModelInfo(
+                id='gpt-oss-20b',
+                match=ClauseEquals(equals='gpt-oss-20b'),
+                name='GPT-OSS 20B',
+                context_window=131072,
+                prices=ModelPrice(
+                    input_mtok=Decimal('0.02'), cache_read_mtok=Decimal('0.003'), output_mtok=Decimal('0.1')
+                ),
+            ),
+        ],
+    ),
+    Provider(
         id='github-copilot',
         name='GitHub Copilot',
         api_pattern='https://api\\.githubcopilot\\.com',
