@@ -71,6 +71,10 @@ cloudflare-get: ## get cloudflare workers ai prices
 arcee-get: ## get arcee model prices
 	uv run -m prices get_arcee_prices
 
+.PHONY: flexai-get
+flexai-get: ## get flexai model prices (needs FLEXAI_API_KEY)
+	uv run -m prices get_flexai_prices
+
 .PHONY: baseten-get
 baseten-get: ## get baseten model prices
 	uv run -m prices get_baseten_prices
